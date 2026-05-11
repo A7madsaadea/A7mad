@@ -4,12 +4,13 @@ import zipfile
 import json
 import base64
 import threading
+import uuid
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from flask import Flask, request, jsonify, send_file, render_template
 from werkzeug.utils import secure_filename
 
-# Google Drive imports (optional - only if credentials exist)
+# Google Drive imports (optional)
 try:
     from google.oauth2 import service_account
     from googleapiclient.discovery import build
@@ -23,16 +24,25 @@ from enhance_module import ImageEnhancer
 from watermark_module import Watermarker
 
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024  # 200MB max upload
+app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB
 
 # ── Paths ──────────────────────────────────────────────────────────────────
-BASE_DIR    = Path(__file__).parent
-LOGO_PATH   = str(BASE_DIR / "logo.png")
+BASE_DIR     = Path(__file__).parent
+LOGO_PATH    = str(BASE_DIR / "logo.png")
 SESSIONS_DIR = BASE_DIR / "sessions"
 SESSIONS_DIR.mkdir(exist_ok=True)
 
 ALLOWED_EXT = {'.jpg', '.jpeg', '.png'}
 MAX_WORKERS  = 4
+
+# ── In-memory job store ────────────────────────────────────────────────────
+# { job_id: { status, progress, total, results, session_id } }
+JOBS = {}
+JOBS_LOCK = threading.Lock()
+
+def job_set(job_id, **kwargs):
+    with JOBS_LOCK:
+        JOBS[job_id].update(kwargs)
 
 # ── Helpers ────────────────────────────────────────────────────────────────
 def allowed(filename):
@@ -44,8 +54,8 @@ def get_session_dir(session_id):
         (d / sub).mkdir(parents=True, exist_ok=True)
     return d
 
-def process_one(name, session_dir, img_filter, results, lock):
-    """Process a single image in its own thread."""
+# ── Per-image worker ───────────────────────────────────────────────────────
+def process_one(name, session_dir, img_filter, results, lock, job_id):
     src = str(session_dir / 'INPUT' / name)
     _enhancer    = ImageEnhancer()
     _watermarker = Watermarker(LOGO_PATH)
@@ -54,19 +64,75 @@ def process_one(name, session_dir, img_filter, results, lock):
         shutil.copy(src, str(session_dir / 'REJECTED' / name))
         with lock:
             results['rejected'].append(name)
-        return
-
-    enhanced = _enhancer.process(src)
-    if enhanced:
-        final = _watermarker.apply(enhanced)
-        out_path = str(session_dir / 'FINAL' / name)
-        final.save(out_path, quality=95)
-        with lock:
-            results['final'].append(name)
     else:
-        shutil.copy(src, str(session_dir / 'REJECTED' / name))
-        with lock:
-            results['rejected'].append(name)
+        enhanced = _enhancer.process(src)
+        if enhanced:
+            final    = _watermarker.apply(enhanced)
+            out_path = str(session_dir / 'FINAL' / name)
+            final.save(out_path, quality=95)
+            with lock:
+                results['final'].append(name)
+        else:
+            shutil.copy(src, str(session_dir / 'REJECTED' / name))
+            with lock:
+                results['rejected'].append(name)
+
+    # update progress
+    with JOBS_LOCK:
+        JOBS[job_id]['progress'] += 1
+
+# ── Background processing task ─────────────────────────────────────────────
+def run_job(job_id, session_id, saved):
+    session_dir = get_session_dir(session_id)
+    img_filter  = ImageFilter(blur_threshold=100, hash_cutoff=5)
+    results     = {'final': [], 'rejected': [], 'duplicates': []}
+    lock        = threading.Lock()
+
+    try:
+        job_set(job_id, status='processing', progress=0, total=len(saved))
+
+        # 1. Serial duplicate check
+        non_dupes = []
+        for name in saved:
+            src = str(session_dir / 'INPUT' / name)
+            if img_filter.is_duplicate(src):
+                shutil.copy(src, str(session_dir / 'DUPLICATES' / name))
+                results['duplicates'].append(name)
+                with JOBS_LOCK:
+                    JOBS[job_id]['progress'] += 1
+            else:
+                non_dupes.append(name)
+
+        # 2. Parallel blur + enhance + watermark
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            futures = {
+                executor.submit(
+                    process_one, name, session_dir,
+                    img_filter, results, lock, job_id
+                ): name
+                for name in non_dupes
+            }
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    name = futures[future]
+                    print(f"Error processing {name}: {e}")
+                    with lock:
+                        results['rejected'].append(name)
+
+        job_set(job_id,
+                status='done',
+                results=results,
+                stats={
+                    'total':      len(saved),
+                    'final':      len(results['final']),
+                    'rejected':   len(results['rejected']),
+                    'duplicates': len(results['duplicates']),
+                })
+
+    except Exception as e:
+        job_set(job_id, status='error', error=str(e))
 
 # ── Routes ─────────────────────────────────────────────────────────────────
 @app.route('/')
@@ -76,66 +142,65 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    """Save files and start background job — returns job_id immediately."""
     files = request.files.getlist('images')
     if not files:
         return jsonify({'error': 'No files uploaded'}), 400
 
-    import uuid
     session_id  = uuid.uuid4().hex
+    job_id      = uuid.uuid4().hex
     session_dir = get_session_dir(session_id)
 
-    # 1. Save uploads
     saved = []
     for f in files:
         if f and allowed(f.filename):
             name = secure_filename(f.filename)
-            dest = session_dir / 'INPUT' / name
-            f.save(str(dest))
+            f.save(str(session_dir / 'INPUT' / name))
             saved.append(name)
 
     if not saved:
         return jsonify({'error': 'No valid image files'}), 400
 
-    img_filter = ImageFilter(blur_threshold=100, hash_cutoff=5)
-    results    = {'final': [], 'rejected': [], 'duplicates': []}
-
-    # 2. Serial duplicate check (stateful — must stay serial)
-    non_dupes = []
-    for name in saved:
-        src = str(session_dir / 'INPUT' / name)
-        if img_filter.is_duplicate(src):
-            shutil.copy(src, str(session_dir / 'DUPLICATES' / name))
-            results['duplicates'].append(name)
-        else:
-            non_dupes.append(name)
-
-    # 3. Parallel blur + enhance + watermark
-    lock = threading.Lock()
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {
-            executor.submit(process_one, name, session_dir,
-                            img_filter, results, lock): name
-            for name in non_dupes
-        }
-        for future in as_completed(futures):
-            try:
-                future.result()
-            except Exception as e:
-                name = futures[future]
-                print(f"Error processing {name}: {e}")
-                with lock:
-                    results['rejected'].append(name)
-
-    return jsonify({
-        'session_id': session_id,
-        'results':    results,
-        'stats': {
+    # Register job
+    with JOBS_LOCK:
+        JOBS[job_id] = {
+            'status':     'queued',
+            'session_id': session_id,
+            'progress':   0,
             'total':      len(saved),
-            'final':      len(results['final']),
-            'rejected':   len(results['rejected']),
-            'duplicates': len(results['duplicates']),
+            'results':    None,
+            'stats':      None,
         }
-    })
+
+    # Start background thread
+    t = threading.Thread(target=run_job, args=(job_id, session_id, saved),
+                         daemon=True)
+    t.start()
+
+    return jsonify({'job_id': job_id, 'total': len(saved)})
+
+
+@app.route('/status/<job_id>')
+def status(job_id):
+    """Poll job progress."""
+    with JOBS_LOCK:
+        job = JOBS.get(job_id)
+    if not job:
+        return jsonify({'error': 'Job not found'}), 404
+
+    resp = {
+        'status':     job['status'],
+        'progress':   job['progress'],
+        'total':      job['total'],
+        'session_id': job['session_id'],
+    }
+    if job['status'] == 'done':
+        resp['results'] = job['results']
+        resp['stats']   = job['stats']
+    if job['status'] == 'error':
+        resp['error'] = job.get('error', 'Unknown error')
+
+    return jsonify(resp)
 
 
 @app.route('/preview/<session_id>/<category>/<filename>')
@@ -164,11 +229,12 @@ def download_all(session_id):
         return 'Session not found', 404
 
     zip_path = SESSIONS_DIR / session_id / 'final_images.zip'
-    with zipfile.ZipFile(str(zip_path), 'w') as zf:
+    with zipfile.ZipFile(str(zip_path), 'w', zipfile.ZIP_DEFLATED) as zf:
         for img in final_dir.iterdir():
             zf.write(str(img), img.name)
 
-    return send_file(str(zip_path), as_attachment=True, download_name='TechArabi_Processed.zip')
+    return send_file(str(zip_path), as_attachment=True,
+                     download_name='TechArabi_Processed.zip')
 
 
 @app.route('/upload-drive/<session_id>', methods=['POST'])
@@ -186,35 +252,35 @@ def upload_drive(session_id):
             creds_json,
             scopes=['https://www.googleapis.com/auth/drive.file']
         )
-        service = build('drive', 'v3', credentials=creds)
+        service   = build('drive', 'v3', credentials=creds)
 
-        # Create dated folder
         from datetime import date
         folder_name = f"TechArabi-Processed-{date.today()}"
-        folder_meta = {
-            'name': folder_name,
-            'mimeType': 'application/vnd.google-apps.folder'
-        }
-        folder = service.files().create(body=folder_meta, fields='id').execute()
+        folder      = service.files().create(
+            body={'name': folder_name,
+                  'mimeType': 'application/vnd.google-apps.folder'},
+            fields='id'
+        ).execute()
         folder_id = folder['id']
 
-        # Upload FINAL images
         final_dir = SESSIONS_DIR / session_id / 'FINAL'
-        uploaded = []
+        uploaded  = []
         for img_path in final_dir.iterdir():
-            media = MediaFileUpload(str(img_path), mimetype='image/jpeg')
+            media     = MediaFileUpload(str(img_path), mimetype='image/jpeg')
             file_meta = {'name': img_path.name, 'parents': [folder_id]}
-            service.files().create(body=file_meta, media_body=media, fields='id').execute()
+            service.files().create(body=file_meta, media_body=media,
+                                   fields='id').execute()
             uploaded.append(img_path.name)
 
-        # Make folder publicly viewable
         service.permissions().create(
             fileId=folder_id,
             body={'type': 'anyone', 'role': 'reader'}
         ).execute()
 
-        drive_url = f"https://drive.google.com/drive/folders/{folder_id}"
-        return jsonify({'url': drive_url, 'uploaded': len(uploaded)})
+        return jsonify({
+            'url':      f"https://drive.google.com/drive/folders/{folder_id}",
+            'uploaded': len(uploaded)
+        })
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
