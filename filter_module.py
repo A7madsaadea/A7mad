@@ -20,6 +20,8 @@ class ImageFilter:
         if image is None:
             return True # نعتبر الملف التالف صورة سيئة
         
+        # Resize for faster blur detection (analysis only)
+        image = cv2.resize(image, (640, 480))
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         focus_measure = cv2.Laplacian(gray, cv2.CV_64F).var()
         
