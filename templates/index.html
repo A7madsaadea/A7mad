@@ -22,9 +22,7 @@
     --red: #ef4444;
     --yellow: #eab308;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     background: var(--black);
     color: var(--text);
@@ -32,8 +30,6 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
-  /* ── GRID BG ── */
   body::before {
     content: '';
     position: fixed;
@@ -45,8 +41,6 @@
     pointer-events: none;
     z-index: 0;
   }
-
-  /* ── HEADER ── */
   header {
     position: relative;
     z-index: 10;
@@ -58,70 +52,44 @@
     background: rgba(10,10,10,0.85);
     backdrop-filter: blur(12px);
   }
-
   .logo-area { display: flex; align-items: center; gap: 14px; }
-  .logo-area img { height: 38px; filter: brightness(1.1); }
+  .logo-area img { height: 38px; }
   .logo-area span {
-    font-size: 13px;
-    color: var(--muted);
+    font-size: 13px; color: var(--muted);
     border-right: 2px solid var(--orange);
-    padding-right: 14px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    padding-right: 14px; font-weight: 600;
   }
-
   .header-badge {
     background: var(--orange-glow);
     border: 1px solid var(--orange);
     color: var(--orange);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 700;
+    padding: 6px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 700;
   }
-
-  /* ── MAIN ── */
   main {
-    position: relative;
-    z-index: 1;
-    max-width: 1000px;
-    margin: 0 auto;
+    position: relative; z-index: 1;
+    max-width: 1000px; margin: 0 auto;
     padding: 48px 24px 80px;
   }
-
-  /* ── HERO TEXT ── */
-  .hero {
-    text-align: center;
-    margin-bottom: 48px;
-  }
+  .hero { text-align: center; margin-bottom: 48px; }
   .hero h1 {
-    font-size: clamp(28px, 4vw, 44px);
-    font-weight: 900;
-    line-height: 1.2;
-    margin-bottom: 12px;
+    font-size: clamp(28px,4vw,44px);
+    font-weight: 900; line-height: 1.2; margin-bottom: 12px;
   }
   .hero h1 span { color: var(--orange); }
   .hero p { color: var(--muted); font-size: 16px; }
 
-  /* ── UPLOAD ZONE ── */
   .upload-zone {
     border: 2px dashed var(--border);
-    border-radius: 20px;
-    padding: 60px 40px;
-    text-align: center;
-    cursor: pointer;
+    border-radius: 20px; padding: 60px 40px;
+    text-align: center; cursor: pointer;
     transition: all 0.25s ease;
-    background: var(--card);
-    position: relative;
-    overflow: hidden;
+    background: var(--card); position: relative; overflow: hidden;
   }
   .upload-zone::before {
-    content: '';
-    position: absolute;
-    inset: 0;
+    content: ''; position: absolute; inset: 0;
     background: radial-gradient(ellipse at center, var(--orange-glow) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
+    opacity: 0; transition: opacity 0.3s;
   }
   .upload-zone:hover, .upload-zone.drag-over {
     border-color: var(--orange);
@@ -129,413 +97,207 @@
     box-shadow: 0 0 40px var(--orange-glow);
   }
   .upload-zone:hover::before, .upload-zone.drag-over::before { opacity: 1; }
-
-  .upload-icon {
-    font-size: 56px;
-    margin-bottom: 16px;
-    display: block;
-    filter: drop-shadow(0 0 12px var(--orange-glow));
-  }
+  .upload-icon { font-size: 56px; margin-bottom: 16px; display: block; }
   .upload-zone h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
   .upload-zone p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-
   .btn-upload {
-    background: var(--orange);
-    color: white;
-    border: none;
-    padding: 12px 32px;
-    border-radius: 12px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    z-index: 1;
+    background: var(--orange); color: white; border: none;
+    padding: 12px 32px; border-radius: 12px;
+    font-family: 'Cairo', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; position: relative; z-index: 1;
   }
-  .btn-upload:hover {
-    background: var(--orange-light);
-    transform: scale(1.04);
-    box-shadow: 0 0 24px var(--orange-glow);
-  }
-
+  .btn-upload:hover { background: var(--orange-light); transform: scale(1.04); }
   #fileInput { display: none; }
 
-  /* ── SELECTED FILES ── */
   .selected-files {
-    display: none;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin-top: 16px;
+    display: none; background: var(--card);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px 24px; margin-top: 16px;
   }
   .selected-files.visible { display: block; }
   .selected-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 14px;
   }
   .selected-header h3 { font-size: 15px; font-weight: 700; }
   .file-count {
-    background: var(--orange-glow);
-    border: 1px solid var(--orange);
-    color: var(--orange);
-    padding: 3px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 700;
+    background: var(--orange-glow); border: 1px solid var(--orange);
+    color: var(--orange); padding: 3px 12px;
+    border-radius: 20px; font-size: 13px; font-weight: 700;
   }
   .file-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    max-height: 120px;
-    overflow-y: auto;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    max-height: 120px; overflow-y: auto;
   }
   .file-chip {
-    background: #222;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 5px 12px;
-    font-size: 12px;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    background: #222; border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 12px;
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
   }
-  .file-chip .ext {
-    color: var(--orange);
-    font-weight: 700;
-    text-transform: uppercase;
-  }
+  .file-chip .ext { color: var(--orange); font-weight: 700; text-transform: uppercase; }
 
-  /* ── PROCESS BTN ── */
-  .process-wrap {
-    display: none;
-    margin-top: 20px;
-    text-align: center;
-  }
+  .process-wrap { display: none; margin-top: 20px; text-align: center; }
   .process-wrap.visible { display: block; }
-
   .btn-process {
     background: linear-gradient(135deg, var(--orange), #ff3d00);
-    color: white;
-    border: none;
-    padding: 16px 48px;
-    border-radius: 14px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 17px;
-    font-weight: 900;
-    cursor: pointer;
+    color: white; border: none; padding: 16px 48px;
+    border-radius: 14px; font-family: 'Cairo', sans-serif;
+    font-size: 17px; font-weight: 900; cursor: pointer;
     transition: all 0.25s;
     box-shadow: 0 4px 24px rgba(255,107,0,0.35);
-    letter-spacing: 0.5px;
   }
-  .btn-process:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 8px 32px rgba(255,107,0,0.5);
-  }
-  .btn-process:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
+  .btn-process:hover { transform: translateY(-2px) scale(1.03); }
+  .btn-process:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  /* ── PROGRESS ── */
   #progressSection {
-    display: none;
-    margin-top: 32px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px 32px;
+    display: none; margin-top: 32px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px 32px;
   }
   #progressSection.visible { display: block; }
-
   .progress-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 14px;
+    display: flex; justify-content: space-between;
+    margin-bottom: 10px; font-size: 14px;
   }
   .progress-label span:first-child { font-weight: 700; }
   .progress-label span:last-child { color: var(--orange); font-weight: 700; }
-
   .progress-bar-track {
-    background: #222;
-    border-radius: 100px;
-    height: 10px;
-    overflow: hidden;
+    background: #222; border-radius: 100px;
+    height: 10px; overflow: hidden;
   }
   .progress-bar-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--orange), var(--orange-light));
-    border-radius: 100px;
-    width: 0%;
+    border-radius: 100px; width: 0%;
     transition: width 0.4s ease;
     box-shadow: 0 0 10px var(--orange-glow);
   }
+  .progress-counter {
+    text-align: center; margin-top: 12px;
+    font-size: 13px; color: var(--muted);
+  }
+  .progress-counter span { color: var(--orange); font-weight: 700; }
 
-  .progress-steps {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
-  .step-badge {
-    background: #222;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.3s;
-  }
-  .step-badge.active {
-    border-color: var(--orange);
-    color: var(--orange);
-    background: var(--orange-glow);
-  }
-  .step-badge.done {
-    border-color: var(--green);
-    color: var(--green);
-    background: rgba(34,197,94,0.08);
-  }
-
-  /* ── STATS ── */
   .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-top: 16px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px; margin-top: 24px;
   }
   .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    text-align: center;
-    transition: all 0.3s;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; text-align: center;
   }
   .stat-card.green { border-color: rgba(34,197,94,0.3); }
   .stat-card.red   { border-color: rgba(239,68,68,0.3); }
   .stat-card.yellow{ border-color: rgba(234,179,8,0.3); }
-
-  .stat-number {
-    font-size: 36px;
-    font-weight: 900;
-    line-height: 1;
-    margin-bottom: 6px;
-  }
+  .stat-number { font-size: 36px; font-weight: 900; line-height: 1; margin-bottom: 6px; }
   .stat-card.green .stat-number { color: var(--green); }
   .stat-card.red   .stat-number { color: var(--red); }
   .stat-card.yellow .stat-number { color: var(--yellow); }
   .stat-label { font-size: 13px; color: var(--muted); font-weight: 600; }
 
-  /* ── RESULTS ── */
   #resultsSection { display: none; margin-top: 32px; }
   #resultsSection.visible { display: block; }
-
   .results-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 12px;
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 20px;
+    flex-wrap: wrap; gap: 12px;
   }
   .results-title { font-size: 20px; font-weight: 900; }
-
   .action-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-
   .btn-action {
-    border: 1.5px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    border: 1.5px solid var(--border); background: var(--card);
+    color: var(--text); padding: 10px 20px;
+    border-radius: 10px; font-family: 'Cairo', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 8px;
   }
-  .btn-action:hover {
-    border-color: var(--orange);
-    color: var(--orange);
-    background: var(--orange-glow);
-  }
-  .btn-action.primary {
-    background: var(--orange);
-    color: white;
-    border-color: var(--orange);
-  }
-  .btn-action.primary:hover {
-    background: var(--orange-light);
-    color: white;
-    box-shadow: 0 0 20px var(--orange-glow);
-  }
+  .btn-action:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-glow); }
+  .btn-action.primary { background: var(--orange); color: white; border-color: var(--orange); }
+  .btn-action.primary:hover { background: var(--orange-light); color: white; }
   .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* ── TABS ── */
   .tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 24px;
-    gap: 4px;
+    display: flex; border-bottom: 1px solid var(--border);
+    margin-bottom: 24px; gap: 4px;
   }
   .tab {
-    padding: 12px 22px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    background: none;
-    color: var(--muted);
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    padding: 12px 22px; font-family: 'Cairo', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    border: none; background: none; color: var(--muted);
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.2s; display: flex; align-items: center; gap: 8px;
   }
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
   .tab-count {
-    background: #222;
-    border-radius: 20px;
-    padding: 2px 9px;
-    font-size: 12px;
+    background: #222; border-radius: 20px;
+    padding: 2px 9px; font-size: 12px;
   }
   .tab.active .tab-count {
-    background: var(--orange-glow);
-    color: var(--orange);
+    background: var(--orange-glow); color: var(--orange);
     border: 1px solid var(--orange);
   }
-
-  /* ── IMAGE GRID ── */
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
-
   .image-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 14px;
   }
-
   .img-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: all 0.25s;
-    position: relative;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; transition: all 0.25s;
   }
   .img-card:hover {
-    border-color: var(--orange);
-    transform: translateY(-3px);
+    border-color: var(--orange); transform: translateY(-3px);
     box-shadow: 0 8px 24px var(--orange-glow);
   }
-  .img-card img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    display: block;
-  }
-  .img-card-info {
-    padding: 10px 12px;
-    border-top: 1px solid var(--border);
-  }
+  .img-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .img-card-info { padding: 10px 12px; border-top: 1px solid var(--border); }
   .img-name {
-    font-size: 12px;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 8px;
+    font-size: 12px; color: var(--muted);
+    white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; margin-bottom: 8px;
   }
   .btn-dl {
-    width: 100%;
-    background: #222;
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 7px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
+    width: 100%; background: #222; color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px; font-family: 'Cairo', sans-serif;
+    font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;
   }
-  .btn-dl:hover {
-    background: var(--orange);
-    border-color: var(--orange);
-    color: white;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
+  .btn-dl:hover { background: var(--orange); border-color: var(--orange); color: white; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
   .empty-state span { font-size: 48px; display: block; margin-bottom: 12px; }
 
-  /* ── DRIVE STATUS ── */
   .drive-status {
-    display: none;
-    margin-top: 12px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    align-items: center;
-    gap: 10px;
+    display: none; margin-top: 12px; padding: 14px 18px;
+    border-radius: 12px; font-size: 14px; font-weight: 700;
+    align-items: center; gap: 10px;
   }
   .drive-status.visible { display: flex; }
   .drive-status.success {
-    background: rgba(34,197,94,0.1);
-    border: 1px solid rgba(34,197,94,0.3);
+    background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
     color: var(--green);
   }
   .drive-status.error {
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.3);
+    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
     color: var(--red);
   }
   .drive-status a { color: inherit; }
 
-  /* ── TOAST ── */
   .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
+    position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(80px);
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 24px;
-    font-size: 14px;
-    font-weight: 700;
-    z-index: 9999;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 24px;
+    font-size: 14px; font-weight: 700; z-index: 9999;
     transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    white-space: nowrap;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5); white-space: nowrap;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--black); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -544,7 +306,7 @@
   @media (max-width: 600px) {
     header { padding: 14px 20px; }
     main { padding: 28px 16px 60px; }
-    .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stats-grid { gap: 8px; }
     .stat-number { font-size: 26px; }
     .upload-zone { padding: 40px 20px; }
   }
@@ -552,7 +314,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo-area">
     <img src="/static/logo.png" alt="تك عربي" onerror="this.style.display='none'">
@@ -561,26 +322,20 @@
   <div class="header-badge">⚡ تك عربي</div>
 </header>
 
-<!-- MAIN -->
 <main>
-  <!-- HERO -->
   <div class="hero">
     <h1>معالج الصور <span>الاحترافي</span></h1>
     <p>ارفع صورك — نفلترها، نحسنها، ونضيف الشعار تلقائياً</p>
   </div>
 
-  <!-- UPLOAD ZONE -->
   <div class="upload-zone" id="uploadZone">
     <span class="upload-icon">📸</span>
     <h2>اسحب الصور هنا</h2>
     <p>أو اضغط لتختار من جهازك — JPG, JPEG, PNG</p>
-    <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
-      اختر الصور
-    </button>
+    <button class="btn-upload" onclick="document.getElementById('fileInput').click()">اختر الصور</button>
     <input type="file" id="fileInput" multiple accept=".jpg,.jpeg,.png">
   </div>
 
-  <!-- SELECTED FILES -->
   <div class="selected-files" id="selectedFiles">
     <div class="selected-header">
       <h3>الصور المحددة</h3>
@@ -589,14 +344,12 @@
     <div class="file-list" id="fileList"></div>
   </div>
 
-  <!-- PROCESS BTN -->
   <div class="process-wrap" id="processWrap">
     <button class="btn-process" id="processBtn" onclick="startProcessing()">
       🚀 ابدأ المعالجة
     </button>
   </div>
 
-  <!-- PROGRESS -->
   <div id="progressSection">
     <div class="progress-label">
       <span id="progressText">جاري الرفع...</span>
@@ -605,17 +358,12 @@
     <div class="progress-bar-track">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
-    <div class="progress-steps">
-      <div class="step-badge" id="step1">📤 رفع الصور</div>
-      <div class="step-badge" id="step2">🔍 فلترة</div>
-      <div class="step-badge" id="step3">✨ تحسين</div>
-      <div class="step-badge" id="step4">🏷️ شعار</div>
-      <div class="step-badge" id="step5">✅ اكتمل</div>
+    <div class="progress-counter" id="progressCounter" style="display:none">
+      تمت معالجة <span id="doneCount">0</span> من <span id="totalCount">0</span> صورة
     </div>
   </div>
 
-  <!-- STATS -->
-  <div class="stats-grid" id="statsGrid" style="display:none; margin-top:24px;">
+  <div class="stats-grid" id="statsGrid" style="display:none">
     <div class="stat-card green">
       <div class="stat-number" id="statFinal">0</div>
       <div class="stat-label">✅ جاهزة</div>
@@ -630,22 +378,15 @@
     </div>
   </div>
 
-  <!-- RESULTS -->
   <div id="resultsSection">
     <div class="results-header">
       <div class="results-title">النتائج</div>
       <div class="action-btns">
-        <button class="btn-action" id="btnDrive" onclick="uploadToDrive()">
-          ☁️ رفع على Drive
-        </button>
-        <button class="btn-action primary" id="btnZip" onclick="downloadAll()">
-          📦 تحميل الكل ZIP
-        </button>
+        <button class="btn-action" id="btnDrive" onclick="uploadToDrive()">☁️ رفع على Drive</button>
+        <button class="btn-action primary" id="btnZip" onclick="downloadAll()">📦 تحميل الكل ZIP</button>
       </div>
     </div>
-
     <div class="drive-status" id="driveStatus"></div>
-
     <div class="tabs">
       <button class="tab active" onclick="switchTab('final', this)">
         ✅ جاهزة <span class="tab-count" id="tc-final">0</span>
@@ -657,7 +398,6 @@
         🔁 مكررة <span class="tab-count" id="tc-duplicates">0</span>
       </button>
     </div>
-
     <div class="tab-panel active" id="panel-final">
       <div class="image-grid" id="grid-final"></div>
     </div>
@@ -668,10 +408,8 @@
       <div class="image-grid" id="grid-duplicates"></div>
     </div>
   </div>
-
 </main>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <span id="toastIcon">ℹ️</span>
   <span id="toastMsg">رسالة</span>
@@ -680,17 +418,13 @@
 <script>
 let selectedFiles = [];
 let currentSession = null;
+let pollTimer = null;
 
-// ── FILE INPUT ──
 const fileInput = document.getElementById('fileInput');
 const uploadZone = document.getElementById('uploadZone');
 
 fileInput.addEventListener('change', e => handleFiles(e.target.files));
-
-uploadZone.addEventListener('dragover', e => {
-  e.preventDefault();
-  uploadZone.classList.add('drag-over');
-});
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
 uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
 uploadZone.addEventListener('drop', e => {
   e.preventDefault();
@@ -699,119 +433,114 @@ uploadZone.addEventListener('drop', e => {
 });
 
 function handleFiles(files) {
-  const valid = Array.from(files).filter(f =>
-    /\.(jpe?g|png)$/i.test(f.name)
-  );
-  if (!valid.length) { showToast('❌', 'لا توجد صور صالحة (JPG, PNG فقط)'); return; }
+  const valid = Array.from(files).filter(f => /\.(jpe?g|png)$/i.test(f.name));
+  if (!valid.length) { showToast('❌', 'لا توجد صور صالحة'); return; }
   selectedFiles = valid;
   renderSelectedFiles();
 }
 
 function renderSelectedFiles() {
-  const list = document.getElementById('fileList');
-  const count = document.getElementById('fileCount');
-  const sel = document.getElementById('selectedFiles');
-  const pw = document.getElementById('processWrap');
-
-  count.textContent = `${selectedFiles.length} صورة`;
-  list.innerHTML = selectedFiles.map(f => {
-    const ext = f.name.split('.').pop().toUpperCase();
+  document.getElementById('fileCount').textContent = `${selectedFiles.length} صورة`;
+  document.getElementById('fileList').innerHTML = selectedFiles.map(f => {
+    const ext  = f.name.split('.').pop().toUpperCase();
     const name = f.name.length > 20 ? f.name.substring(0,18)+'...' : f.name;
     return `<div class="file-chip"><span class="ext">${ext}</span>${name}</div>`;
   }).join('');
-
-  sel.classList.add('visible');
-  pw.classList.add('visible');
+  document.getElementById('selectedFiles').classList.add('visible');
+  document.getElementById('processWrap').classList.add('visible');
 }
 
-// ── PROCESSING ──
 async function startProcessing() {
   if (!selectedFiles.length) return;
-
   const btn = document.getElementById('processBtn');
   btn.disabled = true;
 
-  // Show progress
   const prog = document.getElementById('progressSection');
   prog.classList.add('visible');
   document.getElementById('resultsSection').classList.remove('visible');
   document.getElementById('statsGrid').style.display = 'none';
+  document.getElementById('progressCounter').style.display = 'none';
 
-  setProgress(10, 'جاري رفع الصور...', 'step1');
-  await sleep(300);
+  setBar(5, 'جاري رفع الصور...');
 
   const formData = new FormData();
   selectedFiles.forEach(f => formData.append('images', f));
 
-  setProgress(35, 'جاري المعالجة...', 'step2');
-
   try {
-    const res = await fetch('/upload', { method: 'POST', body: formData });
-    setProgress(65, 'تحسين الصور...', 'step3');
-    await sleep(200);
-
+    const res  = await fetch('/upload', { method: 'POST', body: formData });
     const data = await res.json();
 
-    if (data.error) {
-      showToast('❌', data.error);
-      btn.disabled = false;
-      return;
-    }
+    if (data.error) { showToast('❌', data.error); btn.disabled = false; return; }
 
-    setProgress(85, 'إضافة الشعار...', 'step4');
-    await sleep(300);
-    setProgress(100, 'اكتملت المعالجة!', 'step5');
+    setBar(15, 'بدأت المعالجة...');
+    document.getElementById('progressCounter').style.display = 'block';
+    document.getElementById('totalCount').textContent = data.total;
 
-    currentSession = data.session_id;
-    renderResults(data);
-    showToast('✅', `تمت المعالجة! ${data.stats.final} صورة جاهزة`);
+    // Start polling
+    pollJob(data.job_id, data.total, btn);
 
   } catch(e) {
     showToast('❌', 'خطأ في الاتصال بالسيرفر');
-    setProgress(0, 'فشل الاتصال', null);
+    btn.disabled = false;
   }
-
-  btn.disabled = false;
 }
 
-function setProgress(pct, text, activeStep) {
+function pollJob(jobId, total, btn) {
+  clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    try {
+      const res  = await fetch(`/status/${jobId}`);
+      const job  = await res.json();
+
+      const pct  = Math.min(15 + Math.round((job.progress / total) * 80), 95);
+      setBar(pct, 'جاري المعالجة...');
+      document.getElementById('doneCount').textContent = job.progress;
+
+      if (job.status === 'done') {
+        clearInterval(pollTimer);
+        setBar(100, 'اكتملت المعالجة! 🎉');
+        currentSession = job.session_id;
+        renderResults(job);
+        showToast('✅', `تمت المعالجة! ${job.stats.final} صورة جاهزة`);
+        btn.disabled = false;
+      } else if (job.status === 'error') {
+        clearInterval(pollTimer);
+        showToast('❌', job.error || 'خطأ في المعالجة');
+        btn.disabled = false;
+      }
+    } catch(e) {
+      // Keep polling on network blip
+    }
+  }, 1500);
+}
+
+function setBar(pct, text) {
   document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressPct').textContent  = pct + '%';
   document.getElementById('progressText').textContent = text;
-
-  ['step1','step2','step3','step4','step5'].forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.classList.remove('active', 'done');
-    if (id === activeStep) el.classList.add('active');
-    else if (activeStep && ['step1','step2','step3','step4','step5'].indexOf(activeStep) > i)
-      el.classList.add('done');
-  });
 }
 
-function renderResults(data) {
-  // Stats
-  document.getElementById('statFinal').textContent    = data.stats.final;
-  document.getElementById('statRejected').textContent = data.stats.rejected;
-  document.getElementById('statDups').textContent     = data.stats.duplicates;
+function renderResults(job) {
+  document.getElementById('statFinal').textContent    = job.stats.final;
+  document.getElementById('statRejected').textContent = job.stats.rejected;
+  document.getElementById('statDups').textContent     = job.stats.duplicates;
   document.getElementById('statsGrid').style.display  = 'grid';
 
-  // Tab counts
-  document.getElementById('tc-final').textContent      = data.results.final.length;
-  document.getElementById('tc-rejected').textContent   = data.results.rejected.length;
-  document.getElementById('tc-duplicates').textContent = data.results.duplicates.length;
+  document.getElementById('tc-final').textContent      = job.results.final.length;
+  document.getElementById('tc-rejected').textContent   = job.results.rejected.length;
+  document.getElementById('tc-duplicates').textContent = job.results.duplicates.length;
 
-  // Grids
-  buildGrid('grid-final',      data.results.final,      'FINAL',      true);
-  buildGrid('grid-rejected',   data.results.rejected,   'REJECTED',   false);
-  buildGrid('grid-duplicates', data.results.duplicates, 'DUPLICATES', false);
+  buildGrid('grid-final',      job.results.final,      'FINAL',      true);
+  buildGrid('grid-rejected',   job.results.rejected,   'REJECTED',   false);
+  buildGrid('grid-duplicates', job.results.duplicates, 'DUPLICATES', false);
 
   document.getElementById('resultsSection').classList.add('visible');
 }
 
-function buildGrid(gridId, files, category, showDownload) {
+function buildGrid(gridId, files, category, showDL) {
   const grid = document.getElementById(gridId);
   if (!files.length) {
-    grid.innerHTML = `<div class="empty-state"><span>📭</span>لا توجد صور في هذا القسم</div>`;
+    grid.innerHTML = `<div class="empty-state"><span>📭</span>لا توجد صور</div>`;
     return;
   }
   grid.innerHTML = files.map(name => `
@@ -821,13 +550,12 @@ function buildGrid(gridId, files, category, showDownload) {
            onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect fill=%22%23222%22/></svg>'">
       <div class="img-card-info">
         <div class="img-name">${name}</div>
-        ${showDownload ? `<button class="btn-dl" onclick="downloadOne('${encodeURIComponent(name)}')">⬇️ تحميل</button>` : ''}
+        ${showDL ? `<button class="btn-dl" onclick="downloadOne('${encodeURIComponent(name)}')">⬇️ تحميل</button>` : ''}
       </div>
     </div>
   `).join('');
 }
 
-// ── TABS ──
 function switchTab(name, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -835,60 +563,44 @@ function switchTab(name, btn) {
   document.getElementById('panel-' + name).classList.add('active');
 }
 
-// ── DOWNLOAD ──
-function downloadOne(filename) {
-  window.location.href = `/download/${currentSession}/${filename}`;
-}
+function downloadOne(filename) { window.location.href = `/download/${currentSession}/${filename}`; }
+function downloadAll()         { if (currentSession) window.location.href = `/download-all/${currentSession}`; }
 
-function downloadAll() {
-  if (!currentSession) return;
-  window.location.href = `/download-all/${currentSession}`;
-}
-
-// ── DRIVE ──
 async function uploadToDrive() {
   if (!currentSession) return;
-  const btn = document.getElementById('btnDrive');
+  const btn    = document.getElementById('btnDrive');
   const status = document.getElementById('driveStatus');
   btn.disabled = true;
   btn.textContent = '⏳ جاري الرفع...';
   status.className = 'drive-status';
-
   try {
-    const res = await fetch(`/upload-drive/${currentSession}`, { method: 'POST' });
+    const res  = await fetch(`/upload-drive/${currentSession}`, { method: 'POST' });
     const data = await res.json();
-
     if (data.url) {
       status.className = 'drive-status success visible';
-      status.innerHTML = `✅ تم الرفع على Drive! <a href="${data.url}" target="_blank">افتح الفولدر ←</a>`;
+      status.innerHTML = `✅ تم الرفع! <a href="${data.url}" target="_blank">افتح الفولدر ←</a>`;
       showToast('✅', `تم رفع ${data.uploaded} صورة على Drive`);
     } else {
       status.className = 'drive-status error visible';
       status.innerHTML = `❌ ${data.error || 'فشل الرفع'}`;
-      showToast('❌', data.error || 'فشل رفع Drive');
     }
   } catch(e) {
     status.className = 'drive-status error visible';
     status.innerHTML = '❌ خطأ في الاتصال';
   }
-
   btn.disabled = false;
   btn.innerHTML = '☁️ رفع على Drive';
 }
 
-// ── TOAST ──
 let toastTimer;
 function showToast(icon, msg) {
   const t = document.getElementById('toast');
   document.getElementById('toastIcon').textContent = icon;
-  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastMsg').textContent  = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
 }
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
-
 </body>
 </html>
